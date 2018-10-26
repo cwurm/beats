@@ -1,17 +1,21 @@
 {{ if .Reference -}}
 {{ end -}}
+{{ if ne .GOOS "windows" -}}
 - module: system
-  
+
   metricsets:
     - host
     - packages
     - processes
+    {{ if eq .GOOS "linux" -}}
+    - sockets
+    {{- end }}
 
-  report_changes: true
-  
-  {{ if eq .GOOS "darwin" -}}
-  {{ else if eq .GOOS "windows" -}}
-  {{ else -}}
+  packages.report_changes: true
+  processes.report_changes: true
+  {{ if eq .GOOS "linux" -}}
+  sockets.report_changes: true
   {{- end }}
+{{- end }}
 {{ if .Reference }}
 {{- end }}
