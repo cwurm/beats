@@ -113,10 +113,16 @@ func (p *process) Info() (types.ProcessInfo, error) {
 		return types.ProcessInfo{}, err
 	}
 
+	uid, err := p.UID()
+	if err != nil {
+		return types.ProcessInfo{}, err
+	}
+
 	p.info = &types.ProcessInfo{
 		Name:      stat.Comm,
 		PID:       p.PID,
 		PPID:      stat.PPID,
+		UID:       uid,
 		CWD:       cwd,
 		Exe:       exe,
 		Args:      args,
@@ -202,6 +208,30 @@ func (p *process) Capabilities() (*types.CapabilityInfo, error) {
 	}
 
 	return readCapabilities(content)
+}
+
+func (p *process) UID() (int, error) {
+	content, err := ioutil.ReadFile(p.path("status"))
+	if err != nil {
+		return 0, err
+	}
+
+	var uid int
+	err = parseKeyValue(content, ":", func(key, value []byte) error {
+		switch string(key) {
+		case "Uid":
+			// There are four numbers: Real, effective, saved set, and filesystem UIDs.
+			// See proc(5).
+			uids := bytes.Fields(value)
+			uid, err = strconv.Atoi(string(uids[0]))
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	return uid, err
 }
 
 func ticksToDuration(ticks uint64) time.Duration {

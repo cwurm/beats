@@ -11,6 +11,7 @@ import (
 	"net"
 	"os/user"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -119,9 +120,13 @@ func (s Socket) toMapStr() common.MapStr {
 		},
 	}
 
+	directionString := directionString(s.Direction)
+	if directionString != "" {
+		evt.Put("network.direction", directionString)
+	}
+
 	switch s.Direction {
 	case sock.Outgoing:
-		evt.Put("network.direction", "outbound")
 		evt.Put("source", common.MapStr{
 			"ip":   s.LocalIP,
 			"port": s.LocalPort,
@@ -131,7 +136,6 @@ func (s Socket) toMapStr() common.MapStr {
 			"port": s.RemotePort,
 		})
 	case sock.Incoming:
-		evt.Put("network.direction", "inbound")
 		evt.Put("source", common.MapStr{
 			"ip":   s.RemoteIP,
 			"port": s.RemotePort,
@@ -141,7 +145,6 @@ func (s Socket) toMapStr() common.MapStr {
 			"port": s.LocalPort,
 		})
 	case sock.Listening:
-		evt.Put("network.direction", "listening")
 		evt.Put("destination", common.MapStr{
 			"ip":   s.LocalIP,
 			"port": s.LocalPort,
@@ -164,6 +167,19 @@ func (s Socket) toMapStr() common.MapStr {
 	}
 
 	return evt
+}
+
+func directionString(direction sock.Direction) string {
+	switch direction {
+	case sock.Incoming:
+		return "inbound"
+	case sock.Outgoing:
+		return "outbound"
+	case sock.Listening:
+		return "listening"
+	default:
+		return ""
+	}
 }
 
 // New constructs a new MetricSet.
@@ -348,6 +364,34 @@ func socketEvent(socket *Socket, eventType string, eventAction string) mb.Event 
 			"name": socket.ProcessName,
 		})
 	}
+
+	var actionString string
+	switch eventAction {
+	case eventActionSocketOpened:
+		actionString = "OPENED"
+	case eventActionSocketClosed:
+		actionString = "CLOSED"
+	case eventActionExistingSocket:
+		actionString = "OPEN"
+	}
+
+	var eventSummary string
+	switch socket.Direction {
+	case sock.Incoming:
+		eventSummary = fmt.Sprintf("%v socket (%v:%d -> %v:%d) %v (State: %v) by process '%v' (PID: %d) by user '%v' (UID: %d).",
+			strings.Title(directionString(socket.Direction)), socket.RemoteIP, socket.RemotePort, socket.LocalIP, socket.LocalPort,
+			actionString, socket.State, socket.ProcessName, socket.ProcessPID, socket.Username, socket.UID)
+	case sock.Outgoing:
+		eventSummary = fmt.Sprintf("%v socket (%v:%d -> %v:%d) %v (State: %v) by process '%v' (PID: %d) by user '%v' (UID: %d).",
+			strings.Title(directionString(socket.Direction)), socket.LocalIP, socket.LocalPort, socket.RemoteIP, socket.RemotePort,
+			actionString, socket.State, socket.ProcessName, socket.ProcessPID, socket.Username, socket.UID)
+	case sock.Listening:
+		eventSummary = fmt.Sprintf("%v socket (%v:%d) %v (State: %v) by process '%v' (PID: %d) by user '%v' (UID: %d).",
+			strings.Title(directionString(socket.Direction)), socket.LocalIP, socket.LocalPort,
+			actionString, socket.State, socket.ProcessName, socket.ProcessPID, socket.Username, socket.UID)
+	}
+
+	event.RootFields.Put("event.summary", eventSummary)
 
 	return event
 }
