@@ -1,0 +1,29 @@
+{
+    "@timestamp": "2017-10-12T08:05:34.853Z",
+    "agent": {
+        "hostname": "host.example.com",
+        "name": "host.example.com"
+    },
+    "event": {
+        "action": "login",
+        "dataset": "login",
+        "module": "system",
+        "type": "event"
+    },
+    "system": {
+        "login": {
+            "hostname": "10.0.2.2",
+            "ip": "10.0.2.2",
+            "pid": 14728,
+            "record_type": "USER_PROCESS",
+            "timestamp": "2018-11-19T13:48:39.038Z",
+            "uid": 1000,
+            "tty": "pts/2",
+            "username": "vagrant"
+        }
+    },
+    "user": {
+        "id": 1000,
+        "name": "vagrant"
+    }
+}
