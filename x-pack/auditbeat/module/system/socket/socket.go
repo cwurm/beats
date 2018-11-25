@@ -378,15 +378,15 @@ func socketEvent(socket *Socket, eventType string, eventAction string) mb.Event 
 	var eventSummary string
 	switch socket.Direction {
 	case sock.Incoming:
-		eventSummary = fmt.Sprintf("%v socket (%v:%d -> %v:%d) %v (State: %v) by process '%v' (PID: %d) by user '%v' (UID: %d).",
+		eventSummary = fmt.Sprintf("%v socket (%v:%d -> %v:%d) %v (State: %v) by process %v (PID: %d) by user %v (UID: %d).",
 			strings.Title(directionString(socket.Direction)), socket.RemoteIP, socket.RemotePort, socket.LocalIP, socket.LocalPort,
 			actionString, socket.State, socket.ProcessName, socket.ProcessPID, socket.Username, socket.UID)
 	case sock.Outgoing:
-		eventSummary = fmt.Sprintf("%v socket (%v:%d -> %v:%d) %v (State: %v) by process '%v' (PID: %d) by user '%v' (UID: %d).",
+		eventSummary = fmt.Sprintf("%v socket (%v:%d -> %v:%d) %v (State: %v) by process %v (PID: %d) by user %v (UID: %d).",
 			strings.Title(directionString(socket.Direction)), socket.LocalIP, socket.LocalPort, socket.RemoteIP, socket.RemotePort,
 			actionString, socket.State, socket.ProcessName, socket.ProcessPID, socket.Username, socket.UID)
 	case sock.Listening:
-		eventSummary = fmt.Sprintf("%v socket (%v:%d) %v (State: %v) by process '%v' (PID: %d) by user '%v' (UID: %d).",
+		eventSummary = fmt.Sprintf("%v socket (%v:%d) %v (State: %v) by process %v (PID: %d) by user %v (UID: %d).",
 			strings.Title(directionString(socket.Direction)), socket.LocalIP, socket.LocalPort,
 			actionString, socket.State, socket.ProcessName, socket.ProcessPID, socket.Username, socket.UID)
 	}

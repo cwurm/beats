@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os/user"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/OneOfOne/xxhash"
@@ -248,7 +247,7 @@ func processEvent(pInfo *ProcessInfo, eventType string, eventAction string) mb.E
 	}
 
 	var actionString string
-	processString := strings.Join([]string{pInfo.Exe, strings.Join(pInfo.Args, " ")}, " ")
+	//processString := strings.Join([]string{pInfo.Exe, strings.Join(pInfo.Args, " ")}, " ")
 	switch eventAction {
 	case eventActionProcessStarted:
 		actionString = "STARTED"
@@ -257,8 +256,8 @@ func processEvent(pInfo *ProcessInfo, eventType string, eventAction string) mb.E
 	case eventActionExistingProcess:
 		actionString = "is RUNNING"
 	}
-	eventSummary := fmt.Sprintf("Process '%v' (PID: %d) %v by user '%v' (UID: %d).",
-		processString, pInfo.PID, actionString, pInfo.Username, pInfo.UID)
+	eventSummary := fmt.Sprintf("Process %v (PID: %d) %v by user %v (UID: %d).",
+		pInfo.Name, pInfo.PID, actionString, pInfo.Username, pInfo.UID)
 	event.RootFields.Put("event.summary", eventSummary)
 
 	return event
