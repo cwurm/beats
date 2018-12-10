@@ -338,7 +338,7 @@ func socketMessage(socket *Socket, action eventAction) string {
 		endpointString = fmt.Sprintf("%v:%d", socket.LocalIP, socket.LocalPort)
 	}
 
-	return fmt.Sprintf("%v socket (%v) %v by process %v (PID: %d) by user %v (UID: %d)",
+	return fmt.Sprintf("%v socket (%v) %v by process %v (PID: %d) and user %v (UID: %d)",
 		strings.Title(ecsDirectionString(socket.Direction)), endpointString, actionString,
 		socket.ProcessName, socket.ProcessPID, socket.Username, socket.UID)
 }

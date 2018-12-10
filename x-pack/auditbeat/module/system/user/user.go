@@ -13,6 +13,7 @@ import (
 	"io"
 	"runtime"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -384,8 +385,21 @@ func userMessage(user *User, action eventAction) string {
 	case eventActionPasswordChanged:
 		actionString = "Password change for"
 	}
-	return fmt.Sprintf("%v user %v (UID: %v, Groups: %v)"
-		actionString, user.Name, user.UID, user.Groups)
+
+	return fmt.Sprintf("%v user %v (UID: %v, Groups: %v)",
+		actionString, user.Name, user.UID, fmtGroups(user.Groups))
+}
+
+func fmtGroups(groups []Group) string {
+	var b strings.Builder
+
+	b.WriteString(groups[0].Name)
+	for _, group := range groups[1:] {
+		b.WriteString(",")
+		b.WriteString(group.Name)
+	}
+
+	return b.String()
 }
 
 func convertToCacheable(users []*User) []cache.Cacheable {

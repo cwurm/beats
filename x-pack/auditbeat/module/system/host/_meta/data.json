@@ -10,42 +10,48 @@
         "module": "system",
         "type": "state"
     },
+    "message": "Ubuntu host ubuntu-bionic (IP: 10.0.2.15) is up for 0 days, 5 hours, 11 minutes",
     "service": {
         "type": "system"
     },
     "system": {
         "host": {
             "architecture": "x86_64",
-            "boottime": "2018-12-04T12:13:02Z",
+            "boottime": "2018-12-10T15:48:44Z",
             "containerized": false,
-            "id": "b0d3f38d51bdeefe224737595c03d916",
+            "hostname": "ubuntu-bionic",
+            "id": "6f7be6fb33e6c77f057266415c094408",
             "ip": [
                 "10.0.2.15",
                 "fe80::2d:fdff:fe81:e747",
                 "172.28.128.3",
                 "fe80::a00:27ff:fe1f:7160",
+                "172.19.0.1",
                 "172.17.0.1",
-                "fe80::42:83ff:febe:1a3a",
                 "172.18.0.1",
-                "fe80::42:9eff:fed3:d888"
+                "172.20.0.1",
+                "172.21.0.1",
+                "fe80::42:48ff:fe62:47c5"
             ],
             "mac": [
                 "02:2d:fd:81:e7:47",
                 "08:00:27:1f:71:60",
-                "02:42:83:be:1a:3a",
-                "02:42:9e:d3:d8:88"
+                "02:42:5c:f0:74:94",
+                "02:42:80:01:24:b5",
+                "02:42:28:6b:1c:4c",
+                "02:42:ee:e3:58:69",
+                "02:42:48:62:47:c5"
             ],
-            "hostname": "ubuntu-bionic",
             "os": {
                 "family": "debian",
-                "kernel": "4.15.0-39-generic",
+                "kernel": "4.15.0-42-generic",
                 "name": "Ubuntu",
                 "platform": "ubuntu",
                 "version": "18.04.1 LTS (Bionic Beaver)"
             },
             "timezone.name": "UTC",
             "timezone.offset.sec": 0,
-            "uptime": 105705490232434
+            "uptime": 18661357350265
         }
     }
 }
