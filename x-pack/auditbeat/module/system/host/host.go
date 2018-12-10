@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/gob"
+	"fmt"
 	"io"
 	"net"
 	"strconv"
@@ -316,9 +317,32 @@ func hostEvent(host *Host, eventType string, action eventAction) mb.Event {
 				"type":   eventType,
 				"action": action.string(),
 			},
+			"message": hostMessage(host, action),
 		},
 		MetricSetFields: host.toMapStr(),
 	}
+}
+
+func hostMessage(host *Host, action eventAction) string {
+	// Hostname + IP of the first non-loopback interface.
+	hostString := fmt.Sprintf("%v (IP: %v)", host.info.Hostname, host.addrs[0].String())
+
+	var message string
+	switch action {
+	case eventActionHost:
+		message = fmt.Sprintf("%v host %v is up for %v",
+			host.info.OS.Name, hostString, host.uptime)
+	case eventActionIDChanged:
+		message = fmt.Sprintf("ID of host %v has changed", hostString)
+	case eventActionReboot:
+		message = fmt.Sprintf("Host %v restarted", hostString)
+	case eventActionHostnameChanged:
+		message = fmt.Sprintf("Hostname changed to %v", hostString)
+	case eventActionHostChanged:
+		message = fmt.Sprintf("Host %v changed", hostString)
+	}
+
+	return message
 }
 
 func (ms *MetricSet) saveStateToDisk() error {

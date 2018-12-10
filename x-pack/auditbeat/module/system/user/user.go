@@ -38,13 +38,34 @@ const (
 
 	eventTypeState = "state"
 	eventTypeEvent = "event"
-
-	eventActionExistingUser    = "existing_user"
-	eventActionUserAdded       = "user_added"
-	eventActionUserRemoved     = "user_removed"
-	eventActionUserChanged     = "user_changed"
-	eventActionPasswordChanged = "password_changed"
 )
+
+type eventAction uint8
+
+const (
+	eventActionExistingUser eventAction = iota + 1
+	eventActionUserAdded
+	eventActionUserRemoved
+	eventActionUserChanged
+	eventActionPasswordChanged
+)
+
+func (action eventAction) String() string {
+	switch action {
+	case eventActionExistingUser:
+		return "existing_user"
+	case eventActionUserAdded:
+		return "user_added"
+	case eventActionUserRemoved:
+		return "user_removed"
+	case eventActionUserChanged:
+		return "user_changed"
+	case eventActionPasswordChanged:
+		return "password_changed"
+	default:
+		return ""
+	}
+}
 
 // User represents a user. Fields according to getpwent(3).
 type User struct {
@@ -332,20 +353,39 @@ func (ms *MetricSet) reportChanges(report mb.ReporterV2) error {
 	return nil
 }
 
-func userEvent(user *User, eventType string, eventAction string) mb.Event {
+func userEvent(user *User, eventType string, action eventAction) mb.Event {
 	return mb.Event{
 		RootFields: common.MapStr{
 			"event": common.MapStr{
 				"type":   eventType,
-				"action": eventAction,
+				"action": action.String(),
 			},
 			"user": common.MapStr{
 				"id":   user.UID,
 				"name": user.Name,
 			},
+			"message": userMessage(user, action),
 		},
 		MetricSetFields: user.toMapStr(),
 	}
+}
+
+func userMessage(user *User, action eventAction) string {
+	var actionString string
+	switch action {
+	case eventActionExistingUser:
+		actionString = "Existing"
+	case eventActionUserAdded:
+		actionString = "New"
+	case eventActionUserRemoved:
+		actionString = "Removed"
+	case eventActionUserChanged:
+		actionString = "Changed"
+	case eventActionPasswordChanged:
+		actionString = "Password change for"
+	}
+	return fmt.Sprintf("%v user %v (UID: %v, Groups: %v)"
+		actionString, user.Name, user.UID, user.Groups)
 }
 
 func convertToCacheable(users []*User) []cache.Cacheable {
