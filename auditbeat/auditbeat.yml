@@ -38,7 +38,6 @@ auditbeat.modules:
     ## Unauthorized access attempts.
     #-a always,exit -F arch=b64 -S open,creat,truncate,ftruncate,openat,open_by_handle_at -F exit=-EACCES -k access
     #-a always,exit -F arch=b64 -S open,creat,truncate,ftruncate,openat,open_by_handle_at -F exit=-EPERM -k access
-
 - module: file_integrity
   paths:
   - /bin
@@ -46,7 +45,6 @@ auditbeat.modules:
   - /sbin
   - /usr/sbin
   - /etc
-
 
 
 #==================== Elasticsearch template setting ==========================
